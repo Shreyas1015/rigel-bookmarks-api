@@ -5,7 +5,7 @@
 
 | ID | Name | Status | Plan | Created |
 |---|---|---|---|---|
-| *(no specs yet)* | — | — | — | — |
+| SPEC-001 | Authentication & Accounts | PLANNED | PLAN-001 | 2026-07-20 |
 
 ---
 
