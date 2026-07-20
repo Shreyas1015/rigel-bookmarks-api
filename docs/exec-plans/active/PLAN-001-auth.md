@@ -32,12 +32,12 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 
 ## Acceptance Criteria
 {Copied from SPEC-001 — graded green by `npm run gate:final` / `ac:vector` at completion.}
-- [ ] **AC-1:** `POST /api/v1/auth/register` with a new email returns `201` with `data.accessToken` + `data.user` (id + email, no passwordHash) and sets an httpOnly `refresh_token` cookie.
-- [ ] **AC-2:** duplicate email registration returns `409` `CONFLICT`.
-- [ ] **AC-3:** invalid register body (bad email / password < 8) returns `400` `VALIDATION_ERROR`, no account created.
-- [ ] **AC-4:** `login` with correct credentials returns `200` + `accessToken`; wrong password returns `401` `UNAUTHORIZED`.
-- [ ] **AC-5:** `GET /api/v1/auth/me` is `401` without a token, `200` with the caller's id + email when authenticated.
-- [ ] **AC-6:** `POST /api/v1/auth/refresh` returns `200` with a new `accessToken` from the httpOnly cookie, `401` without it.
+- [x] **AC-1:** `POST /api/v1/auth/register` with a new email returns `201` with `data.accessToken` + `data.user` (id + email, no passwordHash) and sets an httpOnly `refresh_token` cookie.
+- [x] **AC-2:** duplicate email registration returns `409` `CONFLICT`.
+- [x] **AC-3:** invalid register body (bad email / password < 8) returns `400` `VALIDATION_ERROR`, no account created.
+- [x] **AC-4:** `login` with correct credentials returns `200` + `accessToken`; wrong password returns `401` `UNAUTHORIZED`.
+- [x] **AC-5:** `GET /api/v1/auth/me` is `401` without a token, `200` with the caller's id + email when authenticated.
+- [x] **AC-6:** `POST /api/v1/auth/refresh` returns `200` with a new `accessToken` from the httpOnly cookie, `401` without it.
 
 ---
 
@@ -100,11 +100,25 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 - `runtime/middleware/errorHandler.ts`: map AppError. `runtime/app.ts`: mount at /api/v1/auth.
 - `runtime/openapi.ts`: 4 auth paths; `npm run openapi:export` -> 4 paths written + committed.
 
----
-
-## Known Constraints
+### 2026-07-20 — Layer 8 (Tests) — gate GREEN + gate:final AC vector all PASS
+- Unit: `tests/unit/utils/errors.util.test.ts`, `cookie.util.test.ts` (100% utils); DB-backed
+  `tests/unit/services/auth.service.test.ts` (all service branches).
+- Integration: `tests/integration/auth.test.ts` (HTTP contract, envelope, httpOnly cookie, requireAuth).
+- `npm run gate:final` -> AC-1..AC-6 all PASS (acceptance suite green against docker Postgres/Redis).
+- Fixes needed to make the app's own suite runnable (see bug log):
+  1. Rate limiter now skips under NODE_ENV=test (authLimiter 10/min would 429 the acceptance suite).
+  2. Repo imports the model via `models/index.js` barrel so `addModels` runs (else "Model not initialized").
+  3. jest `maxWorkers: 1` + `forceExit: true` (single shared DB; app owns a non-closable redis singleton).
 - **Boundaries:** services may not import providers, so JWT *minting* happens in the Runtime layer (the composition root wires providers); the service does password hashing (argon2) + user persistence and returns domain types.
 - **Error taxonomy:** the scaffold's `errorHandler` only maps `ZodError → 400`. F1 introduces an `AppError` taxonomy (`ConflictError`/`UnauthorizedError`/`NotFoundError`) in `utils/errors.util.ts` and extends `errorHandler` to map it → status + envelope code.
 - **Validation status code:** the scaffolded `errorHandler` maps `ZodError → 400` (not 422); acceptance/integration tests assert `400`.
 - **Refresh cookie:** issued on register + login; `/refresh` reads it from the httpOnly cookie only. Cookie parsing is a small util (no cookie-parser dependency added).
 - **DB schema for tests:** integration/acceptance suites run against a real Postgres (docker compose); schema created via the users migration / model sync.
+
+### AC vector — SPEC-001 — 2026-07-20T16:13:09.274Z
+- AC-1: PASS ✅
+- AC-2: PASS ✅
+- AC-3: PASS ✅
+- AC-4: PASS ✅
+- AC-5: PASS ✅
+- AC-6: PASS ✅

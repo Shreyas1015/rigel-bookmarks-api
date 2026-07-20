@@ -5,7 +5,10 @@
  * primary key / email (no owner scoping) and no cross-user isolation test applies here —
  * the first owned resource arrives with bookmarks (F2).
  */
-import { User as UserModel } from '../models/User.model.js'
+// Import via the models barrel (not User.model.js directly): the barrel runs
+// `sequelize.addModels([...])`, so pulling the model in through it guarantees the model is
+// registered on the Sequelize instance in every path that reaches the repo (routes, workers).
+import { User as UserModel } from '../models/index.js'
 import { UserSchema, type CreateUserInput, type User } from '../types/user.types.js'
 
 /** Persist a new account (email is unique — a duplicate rejects at the DB unique index). */

@@ -1,0 +1,12 @@
+{
+  "specId": "SPEC-001",
+  "gradedAt": "2026-07-20T16:13:09.273Z",
+  "vector": {
+    "AC-1": "PASS",
+    "AC-2": "PASS",
+    "AC-3": "PASS",
+    "AC-4": "PASS",
+    "AC-5": "PASS",
+    "AC-6": "PASS"
+  }
+}
