@@ -52,6 +52,11 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 - `src/types/user.types.ts` (User/PublicUser/CreateUserInput + Zod), `src/types/auth.types.ts` (Register/Login schemas, AuthResponse).
 - Gate: typecheck/lint/circular/arch/assert all pass; traceability now active (10 arch tests, no skips).
 
+### 2026-07-20 — Layer 2 (Foundation: Config + Utils) — gate GREEN
+- `src/config/constants.ts`: REFRESH_COOKIE_NAME, DEFAULT_USER_ROLES.
+- `src/utils/errors.util.ts`: AppError + ConflictError/UnauthorizedError/NotFoundError.
+- `src/utils/cookie.util.ts`: parseCookies (no cookie-parser dependency).
+
 ---
 
 ## Decision Log

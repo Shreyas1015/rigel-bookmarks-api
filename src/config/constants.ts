@@ -12,3 +12,7 @@ export const FEATURE_FLAG_DEFAULTS = {} as const
 /** Cursor-pagination page-size bounds (base64url cursors — see .claude/rules/api.md). */
 export const DEFAULT_PAGE_SIZE = 20
 export const MAX_PAGE_SIZE = 100
+
+/** Auth: httpOnly cookie the refresh token is delivered in, and the default role set. */
+export const REFRESH_COOKIE_NAME = 'refresh_token'
+export const DEFAULT_USER_ROLES: readonly string[] = ['user']
