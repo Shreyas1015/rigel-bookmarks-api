@@ -67,6 +67,10 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
   is broken in the scaffold (sequelize-cli can't load the TS `.sequelizerc` config; `.js` + module.exports
   clashes with `"type":"module"`) — validated programmatically via createRequire instead. See bug log.
 
+### 2026-07-20 — Layer 5 (Repo) — gate GREEN
+- `src/repo/user.repo.ts`: create / findByEmail / findById, each `UserSchema.parse(row.toJSON())`.
+- `src/repo/index.ts`: `export * as userRepo`. No owner-scoped tokens -> no isolation test required.
+
 ---
 
 ## Decision Log
