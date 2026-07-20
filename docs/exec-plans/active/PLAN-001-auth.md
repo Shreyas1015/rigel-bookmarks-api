@@ -48,6 +48,10 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 - 8 layers planned (Workers dropped; no cross-user isolation test — no owned resource yet).
 - Cut feature branch `feat/PLAN-001-auth` from `main` per `.rigel/git-policy.json`.
 
+### 2026-07-20 — Layer 1 (Types) — gate GREEN
+- `src/types/user.types.ts` (User/PublicUser/CreateUserInput + Zod), `src/types/auth.types.ts` (Register/Login schemas, AuthResponse).
+- Gate: typecheck/lint/circular/arch/assert all pass; traceability now active (10 arch tests, no skips).
+
 ---
 
 ## Decision Log
