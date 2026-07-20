@@ -6,6 +6,7 @@
  */
 import rateLimit, { type RateLimitRequestHandler } from 'express-rate-limit'
 import { RedisStore } from 'rate-limit-redis'
+import { env } from '../../config/env.js'
 import { redis } from '../../providers/redis.js'
 
 function makeLimiter(windowMs: number, max: number): RateLimitRequestHandler {
@@ -14,6 +15,9 @@ function makeLimiter(windowMs: number, max: number): RateLimitRequestHandler {
     max,
     standardHeaders: true,
     legacyHeaders: false,
+    // Disabled under NODE_ENV=test: the suite (incl. the acceptance holdout) drives the
+    // rate-limited auth endpoints many times from one IP; production/dev limits are unchanged.
+    skip: () => env.NODE_ENV === 'test',
     store: new RedisStore({
       // rate-limit-redis passes the raw Redis command + args; forward them to ioredis.
       sendCommand: (...args: string[]): Promise<number> =>

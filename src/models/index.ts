@@ -5,8 +5,9 @@
  */
 import 'reflect-metadata'
 import { sequelize } from '../config/database.js'
+import { User } from './User.model.js'
 
 // Products add model classes here, e.g. sequelize.addModels([User, Bookmark]).
-sequelize.addModels([])
+sequelize.addModels([User])
 
-export { sequelize }
+export { sequelize, User }

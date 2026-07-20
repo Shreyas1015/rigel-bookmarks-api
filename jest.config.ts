@@ -3,6 +3,12 @@ import type { Config } from 'jest'
 const config: Config = {
   preset: 'ts-jest/presets/default-esm',
   testEnvironment: 'node',
+  // DB-backed suites (integration + service) share ONE Postgres and reset it (sync/truncate);
+  // run serially so parallel workers can't wipe each other's rows mid-test.
+  maxWorkers: 1,
+  // The app owns a module-singleton ioredis client that supertest-based suites can't close;
+  // force-exit after the run completes so those open handles don't hang the process at teardown.
+  forceExit: true,
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',

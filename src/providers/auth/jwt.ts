@@ -33,6 +33,30 @@ export async function verifyAccessToken(token: string): Promise<AccessTokenClaim
   return payload as AccessTokenClaims
 }
 
+export interface RefreshTokenClaims extends JWTPayload {
+  sub: string
+  typ: 'refresh'
+}
+
+/** Mint a long-lived refresh token (carries `typ: 'refresh'`), delivered as an httpOnly cookie. */
+export async function signRefreshToken(userId: string): Promise<string> {
+  return new SignJWT({ typ: 'refresh' })
+    .setProtectedHeader({ alg: ALG })
+    .setSubject(userId)
+    .setJti(newId())
+    .setIssuedAt()
+    .setExpirationTime(`${env.JWT_REFRESH_EXPIRY_SECONDS}s`)
+    .sign(secret)
+}
+
+/** Verify a refresh token: reject if it is not a refresh token, expired, or revoked. */
+export async function verifyRefreshToken(token: string): Promise<RefreshTokenClaims> {
+  const { payload } = await jwtVerify(token, secret)
+  if (payload.typ !== 'refresh') throw new Error('not a refresh token')
+  if (await isRevoked(payload.jti)) throw new Error('token revoked')
+  return payload as RefreshTokenClaims
+}
+
 /** Add a token's jti to the denylist until its natural expiry. */
 export async function revokeToken(jti: string, ttlSeconds: number): Promise<void> {
   await redis.set(`revoked:${jti}`, '1', 'EX', ttlSeconds)
