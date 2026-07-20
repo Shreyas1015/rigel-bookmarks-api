@@ -57,6 +57,10 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 - `src/utils/errors.util.ts`: AppError + ConflictError/UnauthorizedError/NotFoundError.
 - `src/utils/cookie.util.ts`: parseCookies (no cookie-parser dependency).
 
+### 2026-07-20 — Layer 3 (Models) — gate GREEN
+- `src/models/User.model.ts`: paranoid, UUIDv7 default, unique email index, roles ARRAY default ['user'].
+- Registered in `src/models/index.ts` via `sequelize.addModels([User])`.
+
 ---
 
 ## Decision Log
