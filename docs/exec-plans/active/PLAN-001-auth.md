@@ -61,6 +61,12 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 - `src/models/User.model.ts`: paranoid, UUIDv7 default, unique email index, roles ARRAY default ['user'].
 - Registered in `src/models/index.ts` via `sequelize.addModels([User])`.
 
+### 2026-07-20 — Layer 4 (Migrations) — gate GREEN + logic validated on live PG
+- `db/migrations/20260720000001-create-users.js`: createTable + unique email index; down() drops.
+- Validated up/down/up against docker Postgres (columns + indexes correct). NOTE: `npm run db:migrate`
+  is broken in the scaffold (sequelize-cli can't load the TS `.sequelizerc` config; `.js` + module.exports
+  clashes with `"type":"module"`) — validated programmatically via createRequire instead. See bug log.
+
 ---
 
 ## Decision Log
