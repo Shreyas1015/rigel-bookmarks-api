@@ -1,0 +1,77 @@
+openapi: 3.1.0
+info:
+  title: harness-service
+  version: 0.0.1
+  description: Generated contract. Canonical response envelope + error-code enum
+    are identical across the harness family — see .claude/rules/api.md.
+servers:
+  - url: /api/v1
+components:
+  schemas: {}
+  parameters: {}
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+              required:
+                - email
+                - password
+      responses:
+        "201":
+          description: Account created; access token in body, refresh cookie set
+  /auth/login:
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 1
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: Authenticated; access token in body, refresh cookie set
+        "401":
+          description: Invalid credentials
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: New access token issued from the refresh cookie
+        "401":
+          description: Missing/invalid refresh cookie
+  /auth/me:
+    get:
+      tags:
+        - auth
+      responses:
+        "200":
+          description: The authenticated caller
+        "401":
+          description: Missing/invalid access token
+webhooks: {}

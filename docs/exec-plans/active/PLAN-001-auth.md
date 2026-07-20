@@ -81,7 +81,24 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 
 ## Decision Log
 
-*(Filled during build)*
+### Decision: JWT minting in Runtime, hashing in Service
+**Context:** ESLint boundaries forbid `services -> providers`, so the service cannot call the jwt provider.
+**Chosen:** Service owns argon2 hashing + persistence and returns `PublicUser`; the route (composition root) mints access + refresh tokens via `providers/auth/jwt`.
+**Trade-offs:** Token concerns live in the route, but that is exactly what the composition root is for; the service stays HTTP/token-agnostic and unit-testable without providers.
+
+### Decision: errorHandler maps a domain AppError taxonomy
+**Context:** The scaffold's errorHandler only mapped ZodError->400, everything else->500; auth needs 409/401/404.
+**Chosen:** Introduced `utils/errors.util.ts` (AppError + Conflict/Unauthorized/NotFound) and extended errorHandler to map `AppError` -> its status + envelope code.
+
+### Decision: OpenAPI paths registered in openapi.ts, not route files
+**Context:** `scripts/openapi.export.ts` imports only `src/runtime/openapi.ts`; route-file `registerPath` calls never run (0 paths), and importing routes from openapi.ts would be circular.
+**Chosen:** Register all paths in `openapi.ts` (imports Zod schemas from Types). See bug log — the api.md rule shows route-file registration, which does not work with the exporter.
+
+### 2026-07-20 — Layer 7 (Runtime) — gate GREEN
+- `providers/auth/jwt.ts`: added signRefreshToken / verifyRefreshToken (typ:'refresh', denylist-aware).
+- `runtime/routes/v1/auth.route.ts`: register/login/refresh/me (authLimiter, httpOnly refresh cookie).
+- `runtime/middleware/errorHandler.ts`: map AppError. `runtime/app.ts`: mount at /api/v1/auth.
+- `runtime/openapi.ts`: 4 auth paths; `npm run openapi:export` -> 4 paths written + committed.
 
 ---
 

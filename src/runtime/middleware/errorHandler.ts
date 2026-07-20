@@ -6,12 +6,19 @@ import type { ErrorRequestHandler } from 'express'
 import { ZodError } from 'zod'
 import { logger } from '../../config/logger.js'
 import { err } from '../../utils/response.util.js'
+import { AppError } from '../../utils/errors.util.js'
 
 export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
   const requestId = req.requestId ?? req.header('x-request-id') ?? ''
 
   if (error instanceof ZodError) {
     res.status(400).json(err('VALIDATION_ERROR', 'Invalid request payload', requestId))
+    return
+  }
+
+  // Domain errors carry their own HTTP status + envelope code (CONFLICT, UNAUTHORIZED, NOT_FOUND…).
+  if (error instanceof AppError) {
+    res.status(error.status).json(err(error.code, error.message, requestId))
     return
   }
 
