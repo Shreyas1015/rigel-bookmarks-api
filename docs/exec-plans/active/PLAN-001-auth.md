@@ -71,6 +71,12 @@ httpOnly refresh cookie, and a `requireAuth` auth context every later feature sc
 - `src/repo/user.repo.ts`: create / findByEmail / findById, each `UserSchema.parse(row.toJSON())`.
 - `src/repo/index.ts`: `export * as userRepo`. No owner-scoped tokens -> no isolation test required.
 
+### 2026-07-20 — Layer 6 (Service) — gate GREEN
+- `src/services/auth.service.ts`: register (argon2 hash, duplicate-email -> ConflictError), login
+  (argon2 verify, 401 on bad creds, no user enumeration), getById; withSpan + logger.info per boundary.
+- Fix: argon2's shipped types declare `hash()` as `Promise<any>` -> typed the result at the boundary
+  so `no-unsafe-assignment` stays satisfied (verify() is correctly typed). Import as `* as argon2`.
+
 ---
 
 ## Decision Log
