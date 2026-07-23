@@ -24,7 +24,7 @@ No Workers layer: no background jobs.)
 |---|---|---|---|
 | 1 | `[x]` Types | `src/types/bookmark.types.ts`, `src/types/common.types.ts` | Zero imports, zero logic; Zod schemas (Bookmark, Create/Update, status enum, tag/url/title limits) |
 | 2 | `[x]` Models | `src/models/Bookmark.model.ts`, register in `src/models/index.ts` | paranoid, UUIDv7 default, userId FK, composite `(user_id, created_at, id)` index |
-| 3 | `[ ]` Migrations | `db/migrations/<ts>-create-bookmarks.cjs` | `.cjs`; runs clean; FK ON DELETE CASCADE; both up() + down(); indexes |
+| 3 | `[x]` Migrations | `db/migrations/20260723000001-create-bookmarks.cjs` | `.cjs`; runs clean; FK ON DELETE CASCADE; both up() + down(); indexes |
 | 4 | `[ ]` Repo | `src/repo/bookmark.repo.ts`, `src/repo/index.ts` | Zod parse every result; cursor pagination (Op.lt createdAt+id); owner-scoped `where:{id,userId}`; no findByPk-alone |
 | 5 | `[ ]` Service | `src/services/bookmark.service.ts` | No express import; owner scoping; NotFound on cross-user; ≥90% coverage; boundary logs |
 | 6 | `[ ]` Runtime | `src/runtime/routes/v1/bookmarks.route.ts`, mount in `src/runtime/app.ts`, register in `src/runtime/openapi.ts` | requireAuth first; validate→service→envelope; 422 on invalid; idempotency; cursor query; OpenAPI registered |
