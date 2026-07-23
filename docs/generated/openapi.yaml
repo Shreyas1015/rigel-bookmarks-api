@@ -74,4 +74,128 @@ paths:
           description: The authenticated caller
         "401":
           description: Missing/invalid access token
+  /bookmarks:
+    post:
+      tags:
+        - bookmarks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  maxLength: 2048
+                  format: uri
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 512
+                note:
+                  type: string
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 50
+                  maxItems: 20
+                  default: []
+              required:
+                - url
+                - title
+      responses:
+        "201":
+          description: Bookmark created (status defaults to unread)
+        "401":
+          description: Missing/invalid access token
+        "422":
+          description: Validation error (invalid url / missing title / bad tags)
+    get:
+      tags:
+        - bookmarks
+      responses:
+        "200":
+          description: Cursor-paginated list of the caller's bookmarks (newest-first)
+        "401":
+          description: Missing/invalid access token
+  /bookmarks/{id}:
+    get:
+      tags:
+        - bookmarks
+      parameters:
+        - schema:
+            type: string
+          required: true
+          name: id
+          in: path
+      responses:
+        "200":
+          description: The bookmark
+        "401":
+          description: Missing/invalid access token
+        "404":
+          description: Not found (absent or not the caller's)
+    patch:
+      tags:
+        - bookmarks
+      parameters:
+        - schema:
+            type: string
+          required: true
+          name: id
+          in: path
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  minLength: 1
+                  maxLength: 512
+                note:
+                  type:
+                    - string
+                    - "null"
+                tags:
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 50
+                  maxItems: 20
+                status:
+                  type: string
+                  enum:
+                    - unread
+                    - reading
+                    - archived
+      responses:
+        "200":
+          description: The updated bookmark
+        "401":
+          description: Missing/invalid access token
+        "404":
+          description: Not found (absent or not the caller's)
+        "422":
+          description: Validation error
+    delete:
+      tags:
+        - bookmarks
+      parameters:
+        - schema:
+            type: string
+          required: true
+          name: id
+          in: path
+      responses:
+        "200":
+          description: Soft-deleted
+        "401":
+          description: Missing/invalid access token
+        "404":
+          description: Not found (absent or not the caller's)
 webhooks: {}

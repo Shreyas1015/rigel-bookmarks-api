@@ -7,6 +7,7 @@
 import { OpenAPIRegistry, extendZodWithOpenApi } from '@asteasolutions/zod-to-openapi'
 import { z } from 'zod'
 import { LoginSchema, RegisterSchema } from '../types/auth.types.js'
+import { CreateBookmarkSchema, UpdateBookmarkSchema } from '../types/bookmark.types.js'
 
 extendZodWithOpenApi(z) // enables `.openapi()` metadata on Zod schemas (call once, at import time)
 
@@ -50,5 +51,66 @@ registry.registerPath({
   responses: {
     200: { description: 'The authenticated caller' },
     401: { description: 'Missing/invalid access token' },
+  },
+})
+
+// --- Bookmarks CRUD (SPEC-002 / PLAN-002) — all owner-scoped, requireAuth ---
+const BookmarkIdParams = z.object({ id: z.string() })
+
+registry.registerPath({
+  method: 'post',
+  path: '/bookmarks',
+  tags: ['bookmarks'],
+  request: { body: { content: { 'application/json': { schema: CreateBookmarkSchema } } } },
+  responses: {
+    201: { description: 'Bookmark created (status defaults to unread)' },
+    401: { description: 'Missing/invalid access token' },
+    422: { description: 'Validation error (invalid url / missing title / bad tags)' },
+  },
+})
+registry.registerPath({
+  method: 'get',
+  path: '/bookmarks',
+  tags: ['bookmarks'],
+  responses: {
+    200: { description: "Cursor-paginated list of the caller's bookmarks (newest-first)" },
+    401: { description: 'Missing/invalid access token' },
+  },
+})
+registry.registerPath({
+  method: 'get',
+  path: '/bookmarks/{id}',
+  tags: ['bookmarks'],
+  request: { params: BookmarkIdParams },
+  responses: {
+    200: { description: 'The bookmark' },
+    401: { description: 'Missing/invalid access token' },
+    404: { description: "Not found (absent or not the caller's)" },
+  },
+})
+registry.registerPath({
+  method: 'patch',
+  path: '/bookmarks/{id}',
+  tags: ['bookmarks'],
+  request: {
+    params: BookmarkIdParams,
+    body: { content: { 'application/json': { schema: UpdateBookmarkSchema } } },
+  },
+  responses: {
+    200: { description: 'The updated bookmark' },
+    401: { description: 'Missing/invalid access token' },
+    404: { description: "Not found (absent or not the caller's)" },
+    422: { description: 'Validation error' },
+  },
+})
+registry.registerPath({
+  method: 'delete',
+  path: '/bookmarks/{id}',
+  tags: ['bookmarks'],
+  request: { params: BookmarkIdParams },
+  responses: {
+    200: { description: 'Soft-deleted' },
+    401: { description: 'Missing/invalid access token' },
+    404: { description: "Not found (absent or not the caller's)" },
   },
 })

@@ -27,7 +27,7 @@ No Workers layer: no background jobs.)
 | 3 | `[x]` Migrations | `db/migrations/20260723000001-create-bookmarks.cjs` | `.cjs`; runs clean; FK ON DELETE CASCADE; both up() + down(); indexes |
 | 4 | `[x]` Repo | `src/repo/bookmark.repo.ts`, `src/repo/index.ts`, `tests/integration/bookmark.isolation.test.ts` | Zod parse every result; cursor pagination (Op.lt createdAt+id); owner-scoped `where:{id,userId}`; no findByPk-alone |
 | 5 | `[x]` Service | `src/services/bookmark.service.ts` | No express import; owner scoping; NotFound on cross-user; ≥90% coverage; boundary logs |
-| 6 | `[ ]` Runtime | `src/runtime/routes/v1/bookmarks.route.ts`, mount in `src/runtime/app.ts`, register in `src/runtime/openapi.ts` | requireAuth first; validate→service→envelope; 422 on invalid; idempotency; cursor query; OpenAPI registered |
+| 6 | `[x]` Runtime | `src/runtime/routes/v1/bookmarks.route.ts`, mount in `src/runtime/app.ts`, register in `src/runtime/openapi.ts` | requireAuth first; validate→service→envelope; 422 on invalid; idempotency; cursor query; OpenAPI registered |
 | 7 | `[ ]` Tests | `tests/unit/services/bookmark.service.test.ts`, `tests/integration/bookmarks.test.ts`, `tests/integration/bookmark.isolation.test.ts` | Coverage gates; isolation test present; SPEC-002 acceptance suite green |
 
 ---
@@ -55,7 +55,27 @@ No Workers layer: no background jobs.)
 
 ## Decision Log
 
-*(Filled during build)*
+### Decision: bookmark validation returns 422 via a route-level ValidationError
+**Date:** 2026-07-23
+**Context:** SPEC-002 AC-6 (and `.claude/rules/testing.md`'s canonical route-test example) require
+**422** for invalid input, but the scaffold's global `errorHandler` maps a `ZodError → 400`
+(F1's auth acceptance tests assert that 400 and must not regress).
+**Chosen:** Bookmark routes validate bodies with `Schema.safeParse` and, on failure, throw a new
+`ValidationError` (`utils/errors.util.ts`, `AppError` code `VALIDATION_ERROR`, status 422). The
+existing `AppError` mapping in `errorHandler` turns it into a 422 envelope. Auth keeps its 400.
+**Alternatives:** (a) change the global `ZodError → 422` — rejected: regresses SPEC-001 AC-3.
+(b) let ZodError reach the 400 handler — rejected: fails AC-6.
+**Trade-offs:** two validation status codes coexist in the app (auth 400, bookmarks 422). Recorded
+as a template finding — the scaffold's own `testing.md` example and its `errorHandler` disagree.
+
+### Decision: idempotency mounted at router level (not per-route)
+**Date:** 2026-07-23
+**Context:** Passing `idempotency` as an inline middleware arg (`post('/', idempotency, handler)`)
+degraded Express 5's `req.params` type inference to `string | string[] | undefined`, breaking
+`tsc` under `exactOptionalPropertyTypes`.
+**Chosen:** `bookmarksRouter.use(idempotency)` after `requireAuth`. The middleware already
+no-ops on non-mutating/keyless requests, so GET is unaffected and POST/PATCH/DELETE still honour
+`Idempotency-Key`; single-handler routes keep their inferred `{ id: string }` params.
 
 ---
 

@@ -39,3 +39,10 @@ export class NotFoundError extends AppError {
     super('NOT_FOUND', 404, message)
   }
 }
+
+/** 422 — the request is well-formed JSON but fails semantic validation (invalid field values). */
+export class ValidationError extends AppError {
+  constructor(message: string) {
+    super('VALIDATION_ERROR', 422, message)
+  }
+}
