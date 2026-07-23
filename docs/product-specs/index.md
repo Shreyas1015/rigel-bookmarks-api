@@ -6,7 +6,7 @@
 | ID | Name | Status | Plan | Created |
 |---|---|---|---|---|
 | SPEC-001 | Authentication & Accounts | SHIPPED | PLAN-001 | 2026-07-20 |
-| SPEC-002 | Bookmarks CRUD | PLANNED | PLAN-002 | 2026-07-23 |
+| SPEC-002 | Bookmarks CRUD | SHIPPED | PLAN-002 | 2026-07-23 |
 
 ---
 

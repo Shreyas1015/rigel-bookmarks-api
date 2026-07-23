@@ -1,6 +1,6 @@
 # SPEC-002 — Bookmarks CRUD
 
-**Status:** READY
+**Status:** SHIPPED
 **Created:** 2026-07-23
 **Plan:** PLAN-002
 **Epic:** Read-later
