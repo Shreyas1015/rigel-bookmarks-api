@@ -28,7 +28,7 @@ No Workers layer: no background jobs.)
 | 4 | `[x]` Repo | `src/repo/bookmark.repo.ts`, `src/repo/index.ts`, `tests/integration/bookmark.isolation.test.ts` | Zod parse every result; cursor pagination (Op.lt createdAt+id); owner-scoped `where:{id,userId}`; no findByPk-alone |
 | 5 | `[x]` Service | `src/services/bookmark.service.ts` | No express import; owner scoping; NotFound on cross-user; ≥90% coverage; boundary logs |
 | 6 | `[x]` Runtime | `src/runtime/routes/v1/bookmarks.route.ts`, mount in `src/runtime/app.ts`, register in `src/runtime/openapi.ts` | requireAuth first; validate→service→envelope; 422 on invalid; idempotency; cursor query; OpenAPI registered |
-| 7 | `[ ]` Tests | `tests/unit/services/bookmark.service.test.ts`, `tests/integration/bookmarks.test.ts`, `tests/integration/bookmark.isolation.test.ts` | Coverage gates; isolation test present; SPEC-002 acceptance suite green |
+| 7 | `[x]` Tests | `tests/unit/services/bookmark.service.test.ts`, `tests/integration/bookmarks.test.ts`, `tests/integration/bookmark.isolation.test.ts` (Layer 4), `tests/unit/providers/{jwt,middleware}.test.ts`, `tests/unit/utils/errors.util.test.ts` (+ValidationError) | Coverage gates; isolation test present; SPEC-002 acceptance suite green |
 
 ---
 

@@ -75,11 +75,11 @@ function parseFilter(statusRaw: unknown, tagRaw: unknown): ListBookmarksFilter {
 
 bookmarksRouter.post('/', async (req, res, next) => {
   try {
-    const userId = req.auth?.sub ?? ''
+    const userId = req.auth!.sub
     const parsed = CreateBookmarkSchema.safeParse(req.body)
     if (!parsed.success) throw new ValidationError('Invalid bookmark payload')
     const bookmark = await bookmarkService.create(userId, parsed.data)
-    res.status(201).json(ok(bookmark, req.requestId ?? ''))
+    res.status(201).json(ok(bookmark, req.requestId!))
   } catch (err) {
     next(err)
   }
@@ -87,7 +87,7 @@ bookmarksRouter.post('/', async (req, res, next) => {
 
 bookmarksRouter.get('/', async (req, res, next) => {
   try {
-    const userId = req.auth?.sub ?? ''
+    const userId = req.auth!.sub
     const cursor = decodeCursor(req.query.cursor)
     const limit = parseLimit(req.query.limit)
     const filter = parseFilter(req.query.status, req.query.tag)
@@ -102,7 +102,7 @@ bookmarksRouter.get('/', async (req, res, next) => {
           nextCursor: page.nextCursor ? encodeCursor(page.nextCursor) : null,
           hasMore: page.hasMore,
         },
-        req.requestId ?? ''
+        req.requestId!
       )
     )
   } catch (err) {
@@ -112,9 +112,9 @@ bookmarksRouter.get('/', async (req, res, next) => {
 
 bookmarksRouter.get('/:id', async (req, res, next) => {
   try {
-    const userId = req.auth?.sub ?? ''
+    const userId = req.auth!.sub
     const bookmark = await bookmarkService.get(userId, req.params.id)
-    res.json(ok(bookmark, req.requestId ?? ''))
+    res.json(ok(bookmark, req.requestId!))
   } catch (err) {
     next(err)
   }
@@ -122,11 +122,11 @@ bookmarksRouter.get('/:id', async (req, res, next) => {
 
 bookmarksRouter.patch('/:id', async (req, res, next) => {
   try {
-    const userId = req.auth?.sub ?? ''
+    const userId = req.auth!.sub
     const parsed = UpdateBookmarkSchema.safeParse(req.body)
     if (!parsed.success) throw new ValidationError('Invalid bookmark update')
     const bookmark = await bookmarkService.update(userId, req.params.id, parsed.data)
-    res.json(ok(bookmark, req.requestId ?? ''))
+    res.json(ok(bookmark, req.requestId!))
   } catch (err) {
     next(err)
   }
@@ -134,9 +134,9 @@ bookmarksRouter.patch('/:id', async (req, res, next) => {
 
 bookmarksRouter.delete('/:id', async (req, res, next) => {
   try {
-    const userId = req.auth?.sub ?? ''
+    const userId = req.auth!.sub
     await bookmarkService.remove(userId, req.params.id)
-    res.json(ok({ id: req.params.id, deleted: true }, req.requestId ?? ''))
+    res.json(ok({ id: req.params.id, deleted: true }, req.requestId!))
   } catch (err) {
     next(err)
   }
