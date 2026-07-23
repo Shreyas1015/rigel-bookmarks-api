@@ -79,10 +79,13 @@ Write only the files for this layer. Follow the layer rules exactly.
   import the models layer — `models → config` is the legal registration edge.
 
 **Migrations layer** — `db/migrations/`
-- One migration per table: `YYYYMMDDHHMMSS-create-{table}.js`
-- `up`: createTable + addIndex (CONCURRENTLY for new indexes)
+- One migration per table: `YYYYMMDDHHMMSS-create-{table}.cjs` (**`.cjs`, not `.js`** — the package
+  is `"type": "module"`, so a `.js` migration is parsed as ESM and its `module.exports` throws
+  "module is not defined in ES module scope")
+- `up`: createTable + addIndex (CONCURRENTLY only on already-populated tables; a brand-new table is
+  empty, so a plain unique/regular index is fine and avoids the CONCURRENTLY-in-transaction error)
 - `down`: dropTable
-- Run: `npx sequelize-cli db:migrate` to verify
+- Run: `npm run db:migrate` to verify it applies clean (config comes from `db/config.cjs`)
 
 **Repo layer** — `src/repo/`
 - One file per entity: `{entity}.repo.ts`
@@ -198,7 +201,8 @@ git commit -m "{type}({scope}): {description}
 
 PLAN-XXX Layer N/Total"
 
-git push origin main
+# Push the CURRENT feature branch — never main (it's protected; the loop lands via /open-pr).
+git push origin "$(git branch --show-current)"
 ```
 
 Conventional commit types: `feat`, `fix`, `chore`, `refactor`, `test`, `docs`

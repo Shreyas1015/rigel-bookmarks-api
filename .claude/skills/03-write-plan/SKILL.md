@@ -83,7 +83,7 @@ Save to: `docs/exec-plans/active/PLAN-XXX-{slug}.md`
 | 1 | Types | `src/types/{entity}.types.ts`, `common.types.ts` | Zero imports, zero logic |
 | 2 | Config | `src/config/env.ts` update, `constants.ts` | No process.env elsewhere |
 | 3 | Models | `src/models/{Entity}.model.ts` × N | paranoid, UUIDv7, indexes |
-| 4 | Migrations | `db/migrations/YYYYMMDD-create-{table}.js` × N | Runs clean, has down() |
+| 4 | Migrations | `db/migrations/YYYYMMDD-create-{table}.cjs` × N | Runs clean, has down() |
 | 5 | Repo | `src/repo/{entity}.repo.ts` × N | Zod parse, cursor pagination, ownership, no N+1 |
 | 6 | Service | `src/services/{domain}.service.ts` × N | No express imports, ≥90% coverage |
 | 7 | Runtime | `src/runtime/routes/v1/{resource}.route.ts` × N | Auth first, envelope, rate-limit |
@@ -118,6 +118,20 @@ Save to: `docs/exec-plans/active/PLAN-XXX-{slug}.md`
 ## Known Constraints
 {Any technical decisions already made or constraints from the spec}
 ```
+
+## Step 4b — Cut the feature branch (from `main`, per `.rigel/git-policy.json`)
+
+The build loop runs on a feature branch, **never on `main`** (which is protected). Cut it now —
+named to match the policy pattern `^(feat|fix|chore|hotfix)/PLAN-\d{3}-[a-z0-9-]+$`, using the
+same `PLAN-XXX-{slug}` as the plan file (`feat/` for a new feature; `fix/`/`chore/` when apt):
+
+```bash
+trunk=$(sed -n 's/.*"trunk"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' .rigel/git-policy.json)
+git switch "$trunk" && git pull --ff-only origin "$trunk" 2>/dev/null || true
+git switch -c feat/PLAN-XXX-{slug}      # resuming? use: git switch feat/PLAN-XXX-{slug}
+```
+
+`/build-layer` commits + pushes THIS branch each layer; `/open-pr` later lands it on `main`.
 
 ## Step 5 — Update Spec
 In `docs/product-specs/ready/SPEC-XXX.md`, **APPEND** `PLAN-XXX` to the `**Plan:**` field — do
