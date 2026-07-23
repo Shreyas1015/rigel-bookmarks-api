@@ -6,6 +6,7 @@ import {
   ConflictError,
   NotFoundError,
   UnauthorizedError,
+  ValidationError,
 } from '../../../src/utils/errors.util.js'
 
 describe('errors.util', () => {
@@ -41,5 +42,14 @@ describe('errors.util', () => {
     expect(e.status).toBe(404)
     expect(e.code).toBe('NOT_FOUND')
     expect(e.name).toBe('NotFoundError')
+  })
+
+  it('ValidationError -> 422 / VALIDATION_ERROR', () => {
+    const e = new ValidationError('bad url')
+    expect(e).toBeInstanceOf(AppError)
+    expect(e.status).toBe(422)
+    expect(e.code).toBe('VALIDATION_ERROR')
+    expect(e.name).toBe('ValidationError')
+    expect(e.message).toBe('bad url')
   })
 })

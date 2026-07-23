@@ -1,6 +1,6 @@
 # SPEC-001 — Authentication & Accounts
 
-**Status:** READY
+**Status:** SHIPPED
 **Created:** 2026-07-20
 **Plan:** PLAN-001
 **Epic:** Identity

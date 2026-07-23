@@ -24,14 +24,14 @@ global number — that is what CI enforces.
 
 | Check | Status |
 |---|---|
-| No cross-layer imports (eslint boundaries) | — |
-| Cross-user isolation test per owned resource | — |
-| No circular imports (madge) | — |
-| No files > 400 lines | — |
-| No process.env outside Config | — |
-| No console.log in src/ | — |
-| OpenAPI contract in sync (openapi:export clean) | — |
-| Utils: 100% test coverage | — |
+| No cross-layer imports (eslint boundaries) | ✅ (PLAN-002) |
+| Cross-user isolation test per owned resource | ✅ `bookmark.isolation.test.ts` |
+| No circular imports (madge) | ✅ |
+| No files > 400 lines | ✅ (largest src 143) |
+| No process.env outside Config | ✅ |
+| No console.log in src/ | ✅ |
+| OpenAPI contract in sync (openapi:export clean) | ✅ 6 paths |
+| Utils: 100% test coverage | ✅ |
 
 Run `/layer-check` to update this table.
 
@@ -41,7 +41,7 @@ Run `/layer-check` to update this table.
 
 | Domain | Grade | Coverage | Last Updated | Notes |
 |---|---|---|---|---|
-| *(no domains yet — add after first feature)* | — | — | — | — |
+| Bookmarks | A | repo 100% · service 100% · route ~98% (br 96.7%) | 2026-07-23 (PLAN-002) | Owner-scoped CRUD; cursor pagination; paranoid soft delete; cross-user 404 isolation test; all 7 SPEC-002 ACs PASS. |
 
 ---
 

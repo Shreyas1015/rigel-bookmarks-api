@@ -1,9 +1,9 @@
 # PLAN-001 — Authentication & Accounts
 
-**Status:** IN_PROGRESS
+**Status:** COMPLETE
 **Spec:** docs/product-specs/ready/SPEC-001-auth-accounts.md
 **Created:** 2026-07-20
-**Completed:** —
+**Completed:** 2026-07-20
 
 ---
 
